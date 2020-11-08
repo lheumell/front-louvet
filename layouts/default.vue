@@ -105,6 +105,11 @@ export default {
           icon: 'mdi-chart-bubble',
           title: 'Inspire',
           to: '/inspire'
+        },
+        {
+          icon: 'mdi-plus-box',
+          title: 'Creer une feuille de route',
+          to: '/createForm'
         }
       ],
       miniVariant: false,
