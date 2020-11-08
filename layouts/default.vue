@@ -110,6 +110,11 @@ export default {
           icon: 'mdi-plus-box',
           title: 'Creer une feuille de route',
           to: '/createForm'
+        },
+        {
+          icon: '',
+          title: 'Login',
+          to: '/loginForm'
         }
       ],
       miniVariant: false,
