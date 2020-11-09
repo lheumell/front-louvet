@@ -91,8 +91,5 @@ export default {
     Logo,
     VuetifyLogo
   },
-  computed: {
-    ...mapGetters(["loggedInUser"])
-  }
 };
 </script>

@@ -115,7 +115,12 @@ export default {
           icon: '',
           title: 'Login',
           to: '/loginForm'
-        }
+        },
+        {
+          icon: '',
+          title: 'Login',
+          to: '/loginForm'
+        } 
       ],
       miniVariant: false,
       right: true,
