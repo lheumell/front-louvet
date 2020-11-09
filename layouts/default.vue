@@ -118,8 +118,8 @@ export default {
         },
         {
           icon: '',
-          title: 'Login',
-          to: '/loginForm'
+          title: 'History',
+          to: '/list'
         } 
       ],
       miniVariant: false,
