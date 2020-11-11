@@ -1,6 +1,6 @@
 <template>
      <v-expansion-panels class="mt">
-        <v-expansion-panel :key="i">
+        <v-expansion-panel>
           <v-expansion-panel-header>
             Bon de régie
           </v-expansion-panel-header>

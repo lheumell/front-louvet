@@ -120,7 +120,12 @@ export default {
           icon: '',
           title: 'History',
           to: '/list'
-        } 
+        },
+        {
+          icon: '',
+          title: 'register',
+          to: '/registerForm'
+        }  
       ],
       miniVariant: false,
       right: true,
