@@ -9,12 +9,16 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "@nuxtjs/axios": "^5.12.2",
+    "axios": "^0.21.0",
     "balanced-match": "^1.0.0",
     "core-js": "^3.6.5",
     "core-util-is": "^1.0.2",
     "cors": "^2.8.5",
     "mysql": "^2.18.1",
-    "nuxt": "^2.14.6"
+    "nuxt": "^2.14.6",
+    "nuxt-storage": "^1.2.2",
+    "vuex": "^4.0.0-rc.1"
   },
   "devDependencies": {
     "@nuxtjs/vuetify": "^1.11.2"
