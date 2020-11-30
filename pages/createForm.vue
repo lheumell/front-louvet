@@ -7,14 +7,16 @@
           mdi-checkbox-marked-circle
         </v-icon>
       </v-snackbar>
-      <v-form ref="form" @submit.prevent="submit">
+      <v-form ref="form" method="post" @submit.prevent="submit">
         <v-container fluid>
           <h1>Feuille de route</h1>
           <v-row>
-            <v-col cols="12" sm="12"><span>Informations sur le chantier</span></v-col>
+            <v-col cols="12" sm="12"
+              ><span>Informations sur le chantier</span></v-col
+            >
             <v-col cols="12" sm="12">
               <v-text-field
-                v-model="form.typeMat"
+                v-model="typeMat"
                 color="blue darken-2"
                 label="Type de materiel"
                 required
@@ -22,7 +24,8 @@
             </v-col>
             <v-col cols="6" sm="6">
               <v-text-field
-                v-model="form.numChantier"
+                v-model="numChantier"
+                type="number"
                 color="blue darken-2"
                 label="n° chantier"
                 required
@@ -30,7 +33,7 @@
             </v-col>
             <v-col cols="6" sm="6">
               <v-text-field
-                v-model="form.intitChantier"
+                v-model="intitChantier"
                 color="blue darken-2"
                 label="Intitulé du chantier"
                 required
@@ -38,7 +41,7 @@
             </v-col>
             <v-col cols="12" sm="12">
               <v-text-field
-                v-model="form.adresseChantier"
+                v-model="adresseChantier"
                 color="blue darken-2"
                 label="Adresse du chantier"
                 required
@@ -46,7 +49,7 @@
             </v-col>
             <v-col cols="6" sm="6">
               <v-text-field
-                v-model="form.chefChantier"
+                v-model="chefChantier"
                 color="blue darken-2"
                 label="nom du chef de chantier"
                 required
@@ -54,9 +57,9 @@
             </v-col>
             <v-col cols="6" sm="6">
               <v-text-field
-                v-model="form.numChef"
+                v-model="numChef"
                 color="blue darken-2"
-                label="n° du chef de chantier"
+                label="n° de tel du chef de chantier"
                 required
               ></v-text-field>
             </v-col>
@@ -72,9 +75,10 @@
                 min-width="290px"
               >
                 <template v-slot:activator="{ on, attrs }">
-                  <v-text-field class="calendar"
+                  <v-text-field
+                    class="calendar"
                     v-model="date"
-                    label="Date"
+                    label="A partir du "
                     prepend-icon="mdi-calendar"
                     readonly
                     v-bind="attrs"
@@ -92,28 +96,62 @@
                 </v-date-picker>
               </v-menu>
             </v-col>
+
+            <v-col cols="6" sm="6">
+              <v-menu
+                ref="menu"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                :return-value.sync="time"
+                transition="scale-transition"
+                offset-y
+                max-width="290px"
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="time"
+                    label="à"
+                    prepend-icon="mdi-clock-time-four-outline"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-time-picker
+                  v-model="time"
+                  format="24hr"
+                  @click:minute="$refs.menu.save(time)"
+                ></v-time-picker>
+              </v-menu>
+            </v-col>
+          </v-row>
+          <v-row>
             <v-col cols="6" sm="6">
               <v-text-field
-                v-model="form.nbHeure"
+                v-model="nbHeure"
                 type="number"
-                placeholder="nb heure"
+                placeholder="pour ... jours ou heures"
               ></v-text-field>
+            </v-col>
+            <v-col cols="2" sm="2">
+              <v-select :items="items" v-model="typeTemps" ></v-select>
             </v-col>
           </v-row>
         </v-container>
         <v-card-actions>
-          <v-btn text @click="resetForm">
+          <v-btn text @click="clear">
             Tout effacer
           </v-btn>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" width="500">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                :disabled="!formIsValid"
                 text
                 color="primary"
                 v-bind="attrs"
                 v-on="on"
+                :disabled="!isValideForm"
               >
                 Continuer
               </v-btn>
@@ -128,6 +166,7 @@
                 <v-textarea
                   name="input-7-1"
                   placeholder="Ajouter description..."
+                  v-model="description"
                 ></v-textarea>
               </v-col>
 
@@ -148,9 +187,21 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
-    const defaultForm = Object.freeze({
+    const defaultForm = Object.freeze({});
+    return {
+      form: Object.assign({}, defaultForm),
+      isValideForm: true,
+      snackbar: false,
+        items: ['heure(s)', 'jour(s)'],
+      defaultForm,
+      date: new Date().toISOString().substr(0, 10),
+      time: null,
+      menu: false,
+      dialog: false,
       typeMat: "",
       numChantier: "",
       intitChantier: "",
@@ -158,46 +209,64 @@ export default {
       chefChantier: "",
       numChef: "",
       nbHeure: "",
-    });
-
-    return {
-      form: Object.assign({}, defaultForm),
-      snackbar: false,
-      defaultForm,
-      date: new Date().toISOString().substr(0, 10),
-      menu: false,
-      dialog: false,
+      description: "", 
+      typeTemps: ""
     };
   },
-
   computed: {
     formIsValid() {
-      return (
-        this.form.typeMat &&
-        this.form.numChantier &&
-        this.form.intitChantier &&
-        this.form.adresseChantier &&
-        this.form.chefChantier &&
-        this.form.numChef &&
-        this.form.nbHeure
-      );
-    },
+        this.typeMat &&
+        this.numChantier &&
+        this.intitChantier &&
+        this.adresseChantier &&
+        this.chefChantier &&
+        this.numChef &&
+        this.nbHeure
+    }
   },
 
   methods: {
-    resetForm() {
-      this.form = Object.assign({}, this.defaultForm);
-      this.$refs.form.reset();
+    clear() {
+      (this.typeMat = ""),
+        (this.numChantier = ""),
+        (this.intitChantier = ""),
+        (this.adresseChantier = ""),
+        (this.chefChantier = ""),
+        (this.numChef = ""),
+        (this.nbHeure = "");
     },
     submit() {
-      this.snackbar = true;
+      var self = this;
       this.dialog = false;
-      this.resetForm();
+
+      axios
+        .post("http://localhost:8081/addFeuilleDeRoute", {
+          typeMateriel: this.typeMat,
+          numeroChantier: this.numChantier,
+          nomChantier: this.intitChantier,
+          adresseChantier: this.adresseChantier,
+          nomChef: this.chefChantier,
+          numChef: this.numChef,
+          date: this.date,
+          time: this.time,
+          nbHeure: this.nbHeure,
+          typeTemps: this.typeTemps,
+          commentaire: this.description
+        })
+        .then(function(response) {
+          console.log(response);
+          self.snackbar = true;
+          self.clear();
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     },
     save(date) {
       this.$refs.menu.save(date);
-    },
-  },
+      // this.menu = false
+    }
+  }
 };
 </script>
 

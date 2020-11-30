@@ -1,67 +1,98 @@
 <template>
-  <section class="section loginPage ">
-    <v-card flat>
-      <div class="container">
-        <div class="columns">
-          <div class="column is-4 is-offset-4">
-            <h2 class="title has-text-centered">Welcome back!</h2>
+  <v-card
+    :loading="loading"
+    class="mx-auto"
+    max-width="500"
+    style="margin-top: 100px;"
+  >
+    <v-img
+      class="white--text align-end"
+      height="250px"
+      src="https://upload.wikimedia.org/wikipedia/fr/3/31/Eurovia2008.png"
+      gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.7)"
+    >
+      <v-card-title
+        >Application suivi materiel {{ nom }}
+        <br />
+      </v-card-title>
+    </v-img>
 
-            <Notification :message="error" v-if="error" />
+    <v-card-text class="text--primary" v-if="forgotPassword == false">
+      <v-text-field
+        v-model="identifiant"
+        prepend-icon="mdi-account"
+        type="test"
+        label="Identifiant"
+      ></v-text-field>
 
-            <v-form method="post" @submit.prevent="login">
-              <v-container fluid>
-                <v-row>
-                  <v-col cols="12" sm="12">
-                    <div class="control">
-                      <v-text-field
-                        type="email"
-                        class="input"
-                        name="email"
-                        v-model="email"
-                        label="Email"
-                        required
-                      >
-                      </v-text-field>
-                    </div>
-                  </v-col>
-                  <v-col cols="12" sm="12">
-                    <div class="control">
-                      <v-text-field
-                        type="password"
-                        class="input"
-                        name="password"
-                        v-model="password"
-                        label="Password"
-                        required
-                      >
-                      </v-text-field>
-                    </div>
-                  </v-col>
-                  <v-col cols="12" sm="12">
-                    <div class="control">
-                      <v-btn text color="primary" type="submit">
-                        Log In
-                      </v-btn>
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-form>
+      <v-text-field
+        v-model="password"
+        prepend-icon="mdi-key-chain"
+        :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+        :type="showPassword ? 'text' : 'password'"
+        label="Mot de passe"
+        @click:append="showPassword = !showPassword"
+      ></v-text-field>
 
-            <div class="has-text-centered" style="margin-top: 20px">
-              <nuxt-link to="/">
-                Mot de passe oublié ?
-              </nuxt-link>
-            </div>
-          </div>
-        </div>
+      <div
+        class="body-2 forgotPasswordText"
+        style="color:#0e4a8b;"
+        @click="(forgotPassword = true), (alert = false)"
+      >
+        Mot de passe oublié ?
       </div>
-    </v-card>
-  </section>
+    </v-card-text>
+
+    <v-card-text class="text--primary" v-if="forgotPassword == true">
+      <v-text-field
+        v-model="identifiant"
+        prepend-icon="mdi-account"
+        type="test"
+        label="Identifiant"
+      ></v-text-field>
+    </v-card-text>
+
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn
+        v-if="forgotPassword == false"
+        color="#0e4a8b"
+        text
+        @click="login()"
+      >
+        Connexion
+      </v-btn>
+      <v-btn
+        v-if="forgotPassword"
+        color="#0e4a8b"
+        text
+        @click="forgotPassword = false"
+      >
+        Retour
+      </v-btn>
+      <v-spacer v-if="forgotPassword"></v-spacer>
+      <v-btn
+        :disabled="send"
+        v-if="forgotPassword"
+        color="#0e4a8b"
+        text
+        @click="sendMail()"
+      >
+        {{ textButton }}
+        <v-icon dark right class="ml-2" small>{{ iconSend }} </v-icon>
+      </v-btn>
+    </v-card-actions>
+
+    <v-alert v-if="alert" border="top" :type="alertColor">
+      {{ alertText }}
+    </v-alert>
+  </v-card>
 </template>
 
 <script>
 import Notification from "~/components/Notification";
+import axios from "axios";
+import nuxtStorage from "nuxt-storage";
 
 export default {
   components: {
@@ -70,26 +101,47 @@ export default {
 
   data() {
     return {
-      email: "",
       password: "",
-      error: null
+      showPassword: false,
+      identifiant: "",
+      loading: false,
+      forgotPassword: false,
+      alertText: "",
+      alert: false,
+      alertColor: "",
+      send: false,
+      textButton: "M'envoyer un mail",
+      seconds: 60,
+      iconSend: "mdi-send",
+      nom: nuxtStorage.sessionStorage.nom
     };
   },
 
   methods: {
-    async login() {
-      try {
-        await this.$auth.loginWith("local", {
-          data: {
-            email: this.email,
-            password: this.password
-          }
+    login() {
+      var self = this;
+      axios
+        .post("http://localhost:8081/login", {
+          email: this.identifiant,
+          password: this.password
+        })
+        .then(function(response) {
+          console.log(response.data.user[0].id);
+          if (response.data.user.length != 0) {
+            nuxtStorage.sessionStorage.nom = response.data.user[0].nom;
+            nuxtStorage.sessionStorage.prenom = response.data.user[0].prenom;
+            nuxtStorage.sessionStorage.identifiant =
+              response.data.user[0].email;
+            nuxtStorage.sessionStorage.password =
+              response.data.user[0].password;
+            nuxtStorage.sessionStorage.statut = response.data.user[0].statut;
+          } 
+          self.$router.push("/");
+        
+        })
+        .catch(function(error) {
+          console.log(error);
         });
-
-        this.$router.push("/");
-      } catch (e) {
-        this.error = e.response.data.message;
-      }
     }
   }
 };
