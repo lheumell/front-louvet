@@ -15,7 +15,7 @@
         </p>
         <p>
           <span style="color: #7f8c8d ;">date du bon : </span>
-          {{ infoRegie[0].date }}
+          {{ date }}
         </p>
         <p>
           <span style="color: #7f8c8d ;">Nombres d'heure de jour :</span>
@@ -52,7 +52,8 @@ export default {
   data() {
     return {
       isButton: true,
-      statut: nuxtStorage.sessionStorage.statut
+      statut: nuxtStorage.sessionStorage.statut,
+      date: this.infoRegie[0].date.substr(0, 10)
     };
   },
   methods: {

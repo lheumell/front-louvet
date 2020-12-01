@@ -12,7 +12,7 @@
       gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.7)"
     >
       <v-card-title
-        >Application suivi materiel {{ nom }}
+        >Application suivi materiel
         <br />
       </v-card-title>
     </v-img>
