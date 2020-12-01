@@ -76,9 +76,8 @@
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    class="calendar"
                     v-model="date"
-                    label="A partir du "
+                    label="A partir du"
                     prepend-icon="mdi-calendar"
                     readonly
                     v-bind="attrs"
@@ -90,7 +89,7 @@
                   <v-btn text color="primary" @click="menu = false">
                     Cancel
                   </v-btn>
-                  <v-btn text color="primary" @click="save(date)">
+                  <v-btn text color="primary" @click="$refs.menu.save(date)">
                     OK
                   </v-btn>
                 </v-date-picker>
@@ -99,7 +98,7 @@
 
             <v-col cols="6" sm="6">
               <v-menu
-                ref="menu"
+                ref="menu2"
                 :close-on-content-click="false"
                 :nudge-right="40"
                 :return-value.sync="time"
@@ -121,7 +120,7 @@
                 <v-time-picker
                   v-model="time"
                   format="24hr"
-                  @click:minute="$refs.menu.save(time)"
+                  @click:minute="$refs.menu2.save(time)"
                 ></v-time-picker>
               </v-menu>
             </v-col>
@@ -135,7 +134,7 @@
               ></v-text-field>
             </v-col>
             <v-col cols="2" sm="2">
-              <v-select :items="items" v-model="typeTemps" ></v-select>
+              <v-select :items="items" v-model="typeTemps"></v-select>
             </v-col>
           </v-row>
         </v-container>
@@ -196,11 +195,12 @@ export default {
       form: Object.assign({}, defaultForm),
       isValideForm: true,
       snackbar: false,
-        items: ['heure(s)', 'jour(s)'],
+      items: ["heure(s)", "jour(s)"],
       defaultForm,
       date: new Date().toISOString().substr(0, 10),
+      menu: false, 
+      menu2: false,
       time: null,
-      menu: false,
       dialog: false,
       typeMat: "",
       numChantier: "",
@@ -209,19 +209,19 @@ export default {
       chefChantier: "",
       numChef: "",
       nbHeure: "",
-      description: "", 
+      description: "",
       typeTemps: ""
     };
   },
   computed: {
     formIsValid() {
-        this.typeMat &&
+      this.typeMat &&
         this.numChantier &&
         this.intitChantier &&
         this.adresseChantier &&
         this.chefChantier &&
         this.numChef &&
-        this.nbHeure
+        this.nbHeure;
     }
   },
 

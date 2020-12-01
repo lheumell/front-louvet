@@ -1,8 +1,8 @@
 <template>
   <div class="item" :info="info">
     <v-card elevation="4">
-      <p style="background-color: red;" class="text-center">
-        <span class="deep-orange darken-2">{{ info.etat }}</span>
+      <p class="text-right pr-2 pt-2 ma-0">
+        <span style="background-color: red;" class="pa-2">{{ info.etat }}</span>
       </p>
       <div class="container px-10 pb-10">
         <button class="btn btn-primary" @click="goToBack(showlist)">
@@ -47,7 +47,7 @@
               </v-col>
             </v-row>
             <v-row v-if="!info.tarif">
-              <v-col cols="12" md="6" >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model="tarif"
                   color="blue darken-2"
@@ -59,7 +59,12 @@
               <v-col>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="primary" type="submit" text @click="submitTarif()">
+                  <v-btn
+                    color="primary"
+                    type="submit"
+                    text
+                    @click="submitTarif()"
+                  >
                     Envoyer
                   </v-btn>
                 </v-card-actions>
@@ -185,19 +190,21 @@ export default {
         );
     },
     submitTarif() {
-            axios
-        .post(
-          "http://localhost:8081/addTarif/" + this.info.numeroChantier,
-          {
-            tarif: this.tarif
-          }
-        )
+      axios
+        .post("http://localhost:8081/addTarif/" + this.info.numeroChantier, {
+          tarif: this.tarif
+        })
         .then(function(response) {
           console.log(response);
         })
         .catch(function(error) {
           console.log(error);
         });
+      axios
+        .get("http://localhost:8081/getTarif/" + this.info.numeroChantier)
+        .then(
+          reponse => (this.info.tarif = reponse.data.feuilleDeRoute[0].tarif)
+        );
     },
     submitRegie() {
       axios
@@ -205,7 +212,7 @@ export default {
           nbHeuresJour: this.nbHeuresJour,
           nbHeuresNuit: this.nbHeuresNuit,
           numeroChantier: this.info.numeroChantier,
-          typeMat: this.info.typeMateriel,
+          typeMat: this.info.typeMateriel
         })
         .then(function(response) {
           console.log(response);
@@ -218,7 +225,7 @@ export default {
         .then(reponse => (this.bonDeRegie = reponse.data.bonDeRegie));
       axios
         .post("http://localhost:8081/updateEtat/" + this.info.numeroChantier, {
-          etat: "En attente de validation par le dispatcheur"
+          etat: "En attente de validation par le dispatcheur Louvet"
         })
         .then(function(response) {
           console.log(response);

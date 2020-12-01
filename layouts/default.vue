@@ -1,5 +1,4 @@
 <template>
- 
   <v-app dark>
     <v-navigation-drawer
       v-model="drawer"
@@ -10,7 +9,7 @@
     >
       <v-list>
         <v-list-item
-          v-for="(item, i) in items"
+          v-for="(item, i) in activeRubrique"
           :key="i"
           :to="item.to"
           router
@@ -29,37 +28,6 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title v-text="title" />
       <v-spacer />
-      <!-- <v-btn icon class="mr-10">
-        <v-menu bottom left>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn icon v-bind="attrs" v-on="on">
-            {{ prenom + "" + nom }}
-              <v-avatar class="mb-1" color="#0e4a8b" size="30">
-                <span>{{ prenom + "" + nom }}</span>
-              </v-avatar>
-            </v-btn>
-          </template>
-
-          <v-list>
-            <v-list-item @click="goToMyProfile()">
-              <v-list-item-title>
-                {{ prenom + " " + nom }}
-              </v-list-item-title>
-            </v-list-item>
-            <v-divider></v-divider>
-            <v-list-item link @click="dialogAddItem = true">
-              <v-list-item-title icon>
-                <v-icon class="pr-2">mdi-plus</v-icon>Ajouter un Item
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item link @click="logout()">
-              <v-list-item-title icon>
-                <v-icon class="pr-2">mdi-logout</v-icon>Déconnexion
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-btn> -->
     </v-app-bar>
     <v-main>
       <v-container>
@@ -84,7 +52,7 @@
 </template>
 
 <script>
-import nuxtStorage from 'nuxt-storage';
+import nuxtStorage from "nuxt-storage";
 
 export default {
   data() {
@@ -98,22 +66,26 @@ export default {
         {
           icon: "mdi-home",
           title: "Home",
-          to: "/"
+          to: "/",
+          isntStatut1: true
         },
         {
           icon: "mdi-plus-box",
           title: "Creer une feuille",
-          to: "/createForm"
+          to: "/createForm",
+          isntStatut1: false
         },
         {
           icon: "mdi-history",
           title: "History",
-          to: "/list"
+          to: "/list",
+          isntStatut1: true
         },
         {
           icon: "mdi-login",
           title: "Login",
-          to: "/loginForm"
+          to: "/loginForm",
+          isntStatut1: true
         }
       ],
       miniVariant: false,
@@ -121,6 +93,19 @@ export default {
       rightDrawer: false,
       title: "Application suivi materiel"
     };
+  },
+  computed: {
+    activeRubrique() {
+      if (nuxtStorage.sessionStorage.statut != 1) {
+        return this.items.filter(function(u) {
+          return u;
+        });
+      } else {
+        return this.items.filter(function(u) {
+          return u;
+        });
+      }
+    }
   }
 };
 </script>
