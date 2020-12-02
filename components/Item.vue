@@ -141,26 +141,26 @@ export default {
   methods: {
     ValidateRegie() {
       axios.post(
-        "http://" + this.API_URL + "/updateEtat/" + this.info.numeroChantier,
+        "http://3.21.164.98/beta-louvet/updateEtat/" + this.info.numeroChantier,
         {
           etat: "Feuille de route validée"
         }
       );
       axios
-        .get("http://" + this.API_URL + "/getEtat/" + this.info.numeroChantier)
+        .get("http://3.21.164.98/beta-louvet/getEtat/" + this.info.numeroChantier)
         .then(
           reponse => (this.info.etat = reponse.data.feuilleDeRoute[0].etat)
         );
     },
     notValidateRegie() {
       axios.post(
-        "http://" + this.API_URL + "/updateEtat/" + this.info.numeroChantier,
+        "http://3.21.164.98/beta-louvet/updateEtat/" + this.info.numeroChantier,
         {
           etat: "Bon de régie refusé"
         }
       );
       axios
-        .get("http://" + this.API_URL + "/getEtat/" + this.info.numeroChantier)
+        .get("http://3.21.164.98/beta-louvet/getEtat/" + this.info.numeroChantier)
         .then(
           reponse => (this.info.etat = reponse.data.feuilleDeRoute[0].etat)
         );
@@ -171,7 +171,7 @@ export default {
     submit() {
       axios
         .post(
-          "http://" + this.API_URL + "/addChauffeur/" + this.info.numeroChantier,
+          "http://3.21.164.98/beta-louvet/addChauffeur/" + this.info.numeroChantier,
           {
             chauffeur: this.chauffeur
           }
@@ -183,7 +183,7 @@ export default {
           console.log(error);
         });
       axios
-        .post("http://" + this.API_URL + "/updateEtat/" + this.info.numeroChantier, {
+        .post("http://3.21.164.98/beta-louvet/updateEtat/" + this.info.numeroChantier, {
           etat: "En attente du bon de regie du chauffeur"
         })
         .then(function(response) {
@@ -193,20 +193,20 @@ export default {
           console.log(error);
         });
       axios
-        .get("http://" + this.API_URL + "/getChauffeur/" + this.info.numeroChantier)
+        .get("http://3.21.164.98/beta-louvet/getChauffeur/" + this.info.numeroChantier)
         .then(
           reponse =>
             (this.info.chauffeur = reponse.data.feuilleDeRoute[0].chauffeur)
         );
       axios
-        .get("http://" + this.API_URL + "/getEtat/" + this.info.numeroChantier)
+        .get("http://3.21.164.98/beta-louvet/getEtat/" + this.info.numeroChantier)
         .then(
           reponse => (this.info.etat = reponse.data.feuilleDeRoute[0].etat)
         );
     },
     submitTarif() {
       axios
-        .post("http://" + this.API_URL + "/addTarif/" + this.info.numeroChantier, {
+        .post("http://3.21.164.98/beta-louvet/addTarif/" + this.info.numeroChantier, {
           tarif: this.tarif
         })
         .then(function(response) {
@@ -216,14 +216,14 @@ export default {
           console.log(error);
         });
       axios
-        .get("http://" + this.API_URL + "/getTarif/" + this.info.numeroChantier)
+        .get("http://3.21.164.98/beta-louvet/getTarif/" + this.info.numeroChantier)
         .then(
           reponse => (this.info.tarif = reponse.data.feuilleDeRoute[0].tarif)
         );
     },
     submitRegie() {
       axios
-        .post("http://" + this.API_URL + "/addBonRegie", {
+        .post("http://3.21.164.98/beta-louvet/addBonRegie", {
           nbHeuresJour: this.nbHeuresJour,
           nbHeuresNuit: this.nbHeuresNuit,
           numeroChantier: this.info.numeroChantier,
@@ -236,10 +236,10 @@ export default {
           console.log(error);
         });
       axios
-        .get("http://" + this.API_URL + "/getBonDeRegie/" + this.info.numeroChantier)
+        .get("http://3.21.164.98/beta-louvet/getBonDeRegie/" + this.info.numeroChantier)
         .then(reponse => (this.bonDeRegie = reponse.data.bonDeRegie));
       axios
-        .post("http://" + this.API_URL + "/updateEtat/" + this.info.numeroChantier, {
+        .post("http://3.21.164.98/beta-louvet/updateEtat/" + this.info.numeroChantier, {
           etat: "En attente de validation par le dispatcheur Louvet"
         })
         .then(function(response) {
@@ -249,7 +249,7 @@ export default {
           console.log(error);
         });
       axios
-        .get("http://" + this.API_URL + "/getEtat/" + this.info.numeroChantier)
+        .get("http://3.21.164.98/beta-louvet/getEtat/" + this.info.numeroChantier)
         .then(
           reponse => (this.info.etat = reponse.data.feuilleDeRoute[0].etat)
         );
@@ -257,7 +257,7 @@ export default {
   },
   mounted() {
     axios
-      .get("http://" + this.API_URL + "/getBonDeRegie/" + this.info.numeroChantier)
+      .get("http://3.21.164.98/beta-louvet/getBonDeRegie/" + this.info.numeroChantier)
       .then(reponse => (this.bonDeRegie = reponse.data.bonDeRegie));
   }
 };
