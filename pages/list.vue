@@ -57,7 +57,7 @@ export default {
   },
   mounted() {
     axios
-      .get("http://" + this.API_URL + "/getFeuilleDeRoute")
+      .get(this.API_URL + "/getFeuilleDeRoute")
       .then(reponse => (this.items = reponse.data.feuilleDeRoute));
   }
 };
