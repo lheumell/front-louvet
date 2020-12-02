@@ -16,7 +16,7 @@ export default {
   },
 
   env: {
-    API_URL: process.env.BASE_URL || 'http://3.21.164.98/beta-louvet/',   
+    API_URL: process.env.BASE_URL || '3.21.164.98/beta-louvet',   
     },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
