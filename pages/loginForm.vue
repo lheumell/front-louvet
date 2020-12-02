@@ -101,6 +101,7 @@ export default {
 
   data() {
     return {
+      API_URL: process.env.API_URL,
       password: "",
       showPassword: false,
       identifiant: "",
@@ -121,7 +122,7 @@ export default {
     login() {
       var self = this;
       axios
-        .post("http://localhost:8081/login", {
+        .post("http://" + this.API_URL + "/login", {
           email: this.identifiant,
           password: this.password
         })

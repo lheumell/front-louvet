@@ -41,6 +41,7 @@ import axios from "axios";
 
 export default {
   data: () => ({
+     API_URL: process.env.API_URL,
     showlist: true,
     selectedItem: {},
     items: {}
@@ -56,7 +57,7 @@ export default {
   },
   mounted() {
     axios
-      .get("http://localhost:8081/getFeuilleDeRoute")
+      .get("http://" + this.API_URL + "/getFeuilleDeRoute")
       .then(reponse => (this.items = reponse.data.feuilleDeRoute));
   }
 };

@@ -192,6 +192,7 @@ export default {
   data() {
     const defaultForm = Object.freeze({});
     return {
+       API_URL: process.env.API_URL,
       form: Object.assign({}, defaultForm),
       isValideForm: true,
       snackbar: false,
@@ -240,7 +241,7 @@ export default {
       this.dialog = false;
 
       axios
-        .post("http://localhost:8081/addFeuilleDeRoute", {
+        .post("http://" + this.API_URL + "/addFeuilleDeRoute", {
           typeMateriel: this.typeMat,
           numeroChantier: this.numChantier,
           nomChantier: this.intitChantier,
