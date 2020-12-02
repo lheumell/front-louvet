@@ -241,7 +241,7 @@ export default {
       this.dialog = false;
 
       axios
-        .post("http://3.21.164.98/beta-louvet/addFeuilleDeRoute", {
+        .post("https://3.21.164.98/beta-louvet/addFeuilleDeRoute", {
           typeMateriel: this.typeMat,
           numeroChantier: this.numChantier,
           nomChantier: this.intitChantier,
