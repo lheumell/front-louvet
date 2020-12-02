@@ -26,14 +26,22 @@
           {{ infoRegie[0].nbHeuresNuit }}
         </p>
       </v-expansion-panel-content>
-      <v-card-actions>
+      <v-card-actions v-if="RegieValide != 'Feuille de route validée' && statut == 2">
         <v-spacer></v-spacer>
+         <v-btn
+          color="primary"
+          type="submit"
+          text
+          @click="notValidate(isButton)"
+        >
+          Refuser
+        </v-btn>
         <v-btn
           color="primary"
           type="submit"
           text
           @click="validate(isButton)"
-          v-if="RegieValide != 'Feuille de route validée' && statut == 2"
+         
         >
           Valider
         </v-btn>
@@ -61,6 +69,11 @@ export default {
       console.log("c'est validé");
       this.isButton = false;
       this.$emit("ValidateRegie", param);
+    },
+     notValidate(param) {
+      console.log("c'est pas validé");
+      this.isButton = false;
+      this.$emit("notValidateRegie", param);
     }
   }
 };

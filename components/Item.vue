@@ -18,6 +18,7 @@
           :RegieValide="this.info.etat"
           v-if="bonDeRegie[0]"
           @ValidateRegie="ValidateRegie"
+          @notValidateRegie="notValidateRegie"
         />
 
         <v-form method="post" @submit.prevent="submit">
@@ -72,7 +73,7 @@
             </v-row>
           </v-container>
         </v-form>
-        <v-form method="post" v-if="!bonDeRegie[0]">
+        <v-form method="post" v-if="!bonDeRegie[0] || info.etat == 'Bon de régie refusé'">
           <v-container v-if="statut == 3 && nom == info.chauffeur">
             <v-row>
               <v-col cols="12" md="5" lg="5" xl="5">
@@ -142,6 +143,19 @@ export default {
         "http://localhost:8081/updateEtat/" + this.info.numeroChantier,
         {
           etat: "Feuille de route validée"
+        }
+      );
+      axios
+        .get("http://localhost:8081/getEtat/" + this.info.numeroChantier)
+        .then(
+          reponse => (this.info.etat = reponse.data.feuilleDeRoute[0].etat)
+        );
+    },
+    notValidateRegie() {
+      axios.post(
+        "http://localhost:8081/updateEtat/" + this.info.numeroChantier,
+        {
+          etat: "Bon de régie refusé"
         }
       );
       axios
