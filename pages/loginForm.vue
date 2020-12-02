@@ -122,7 +122,7 @@ export default {
     login() {
       var self = this;
       axios
-        .post("http://" + this.API_URL + "/login", {
+        .post("http://localhost:8081/login", {
           email: this.identifiant,
           password: this.password
         })
