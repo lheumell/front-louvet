@@ -122,7 +122,7 @@ export default {
     login() {
       var self = this;
       axios
-        .post("http://localhost:8081/login", {
+        .post("http://3.21.164.98/beta-louvet/login", {
           email: this.identifiant,
           password: this.password
         })
