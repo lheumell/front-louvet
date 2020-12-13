@@ -9,8 +9,8 @@
           <v-icon class="mb-6">mdi-chevron-left </v-icon>
         </button>
         <h1>
-          <span style="color: #7f8c8d;">Numero du chantier:</span>
-          {{ info.numeroChantier }}
+          <span style="color: #7f8c8d;">Numéro de demande : {{prout}</span>
+          {{ date + "-" + info.id }}
         </h1>
         <Recapitulatif :info="info" />
         <Regie
@@ -73,7 +73,10 @@
             </v-row>
           </v-container>
         </v-form>
-        <v-form method="post" v-if="!bonDeRegie[0] || info.etat == 'Bon de régie refusé'">
+        <v-form
+          method="post"
+          v-if="!bonDeRegie[0] || info.etat == 'Bon de régie refusé'"
+        >
           <v-container v-if="statut == 3 && nom == info.chauffeur">
             <v-row>
               <v-col cols="12" md="5" lg="5" xl="5">
@@ -135,32 +138,34 @@ export default {
       nbHeuresJour: "",
       nbHeuresNuit: "",
       statut: nuxtStorage.sessionStorage.statut,
-      nom: nuxtStorage.sessionStorage.nom
+      nom: nuxtStorage.sessionStorage.nom,
+      date: this.info.dateFDR.substr(0, 10),
+      prout: ""
     };
   },
   methods: {
     ValidateRegie() {
       axios.post(
-        "http://18.225.34.252/beta-louvet/updateEtat/" + this.info.numeroChantier,
+        "http://localhost:8085/updateEtat/" + this.info.numeroChantier,
         {
           etat: "Feuille de route validée"
         }
       );
       axios
-        .get("http://18.225.34.252/beta-louvet/getEtat/" + this.info.numeroChantier)
+        .get("http://localhost:8085/getEtat/" + this.info.numeroChantier)
         .then(
           reponse => (this.info.etat = reponse.data.feuilleDeRoute[0].etat)
         );
     },
     notValidateRegie() {
       axios.post(
-        "http://18.225.34.252/beta-louvet/updateEtat/" + this.info.numeroChantier,
+        "http://localhost:8085/updateEtat/" + this.info.numeroChantier,
         {
           etat: "Bon de régie refusé"
         }
       );
       axios
-        .get("http://18.225.34.252/beta-louvet/getEtat/" + this.info.numeroChantier)
+        .get("http://localhost:8085/getEtat/" + this.info.numeroChantier)
         .then(
           reponse => (this.info.etat = reponse.data.feuilleDeRoute[0].etat)
         );
@@ -171,7 +176,7 @@ export default {
     submit() {
       axios
         .post(
-          "http://18.225.34.252/beta-louvet/addChauffeur/" + this.info.numeroChantier,
+          "http://localhost:8085/addChauffeur/" + this.info.numeroChantier,
           {
             chauffeur: this.chauffeur
           }
@@ -183,7 +188,7 @@ export default {
           console.log(error);
         });
       axios
-        .post("http://18.225.34.252/beta-louvet/updateEtat/" + this.info.numeroChantier, {
+        .post("http://localhost:8085/updateEtat/" + this.info.numeroChantier, {
           etat: "En attente du bon de regie du chauffeur"
         })
         .then(function(response) {
@@ -193,20 +198,20 @@ export default {
           console.log(error);
         });
       axios
-        .get("http://18.225.34.252/beta-louvet/getChauffeur/" + this.info.numeroChantier)
+        .get("http://localhost:8085/getChauffeur/" + this.info.numeroChantier)
         .then(
           reponse =>
             (this.info.chauffeur = reponse.data.feuilleDeRoute[0].chauffeur)
         );
       axios
-        .get("http://18.225.34.252/beta-louvet/getEtat/" + this.info.numeroChantier)
+        .get("http://localhost:8085/getEtat/" + this.info.numeroChantier)
         .then(
           reponse => (this.info.etat = reponse.data.feuilleDeRoute[0].etat)
         );
     },
     submitTarif() {
       axios
-        .post("http://18.225.34.252/beta-louvet/addTarif/" + this.info.numeroChantier, {
+        .post("http://localhost:8085/addTarif/" + this.info.numeroChantier, {
           tarif: this.tarif
         })
         .then(function(response) {
@@ -216,14 +221,14 @@ export default {
           console.log(error);
         });
       axios
-        .get("http://18.225.34.252/beta-louvet/getTarif/" + this.info.numeroChantier)
+        .get("http://localhost:8085/getTarif/" + this.info.numeroChantier)
         .then(
           reponse => (this.info.tarif = reponse.data.feuilleDeRoute[0].tarif)
         );
     },
     submitRegie() {
       axios
-        .post("http://18.225.34.252/beta-louvet/addBonRegie", {
+        .post("http://localhost:8085/addBonRegie", {
           nbHeuresJour: this.nbHeuresJour,
           nbHeuresNuit: this.nbHeuresNuit,
           numeroChantier: this.info.numeroChantier,
@@ -236,10 +241,10 @@ export default {
           console.log(error);
         });
       axios
-        .get("http://18.225.34.252/beta-louvet/getBonDeRegie/" + this.info.numeroChantier)
+        .get("http://localhost:8085/getBonDeRegie/" + this.info.numeroChantier)
         .then(reponse => (this.bonDeRegie = reponse.data.bonDeRegie));
       axios
-        .post("http://18.225.34.252/beta-louvet/updateEtat/" + this.info.numeroChantier, {
+        .post("http://localhost:8085/updateEtat/" + this.info.numeroChantier, {
           etat: "En attente de validation par le dispatcheur Louvet"
         })
         .then(function(response) {
@@ -249,7 +254,7 @@ export default {
           console.log(error);
         });
       axios
-        .get("http://18.225.34.252/beta-louvet/getEtat/" + this.info.numeroChantier)
+        .get("http://localhost:8085/getEtat/" + this.info.numeroChantier)
         .then(
           reponse => (this.info.etat = reponse.data.feuilleDeRoute[0].etat)
         );
@@ -257,8 +262,14 @@ export default {
   },
   mounted() {
     axios
-      .get("http://18.225.34.252/beta-louvet/getBonDeRegie/" + this.info.numeroChantier)
+      .get("http://localhost:8085/getBonDeRegie/" + this.info.numeroChantier)
       .then(reponse => (this.bonDeRegie = reponse.data.bonDeRegie));
+    var date = this.info.dateFDR.substr(0, 10);
+    date = date
+      .split("-")
+      .reverse()
+      .join("-");
+    console.log(date);
   }
 };
 </script>

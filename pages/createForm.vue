@@ -25,7 +25,6 @@
             <v-col cols="6" sm="6">
               <v-text-field
                 v-model="numChantier"
-                type="number"
                 color="blue darken-2"
                 label="n° chantier"
                 required
@@ -158,13 +157,13 @@
 
             <v-card>
               <v-card-title class="headline grey lighten-2">
-                description
+                Commentaires
               </v-card-title>
 
               <v-col cols="12" md="12">
                 <v-textarea
                   name="input-7-1"
-                  placeholder="Ajouter description..."
+                  placeholder="Ajouter un commentaire ou une consigne"
                   v-model="description"
                 ></v-textarea>
               </v-col>
@@ -192,14 +191,14 @@ export default {
   data() {
     const defaultForm = Object.freeze({});
     return {
-       API_URL: process.env.API_URL,
+      API_URL: process.env.API_URL,
       form: Object.assign({}, defaultForm),
       isValideForm: true,
       snackbar: false,
       items: ["heure(s)", "jour(s)"],
       defaultForm,
       date: new Date().toISOString().substr(0, 10),
-      menu: false, 
+      menu: false,
       menu2: false,
       time: null,
       dialog: false,
@@ -211,7 +210,8 @@ export default {
       numChef: "",
       nbHeure: "",
       description: "",
-      typeTemps: ""
+      typeTemps: "",
+      infos: {}
     };
   },
   computed: {
@@ -241,7 +241,7 @@ export default {
       this.dialog = false;
 
       axios
-        .post("http://18.225.34.252/beta-louvet/addFeuilleDeRoute", {
+        .post("http://localhost:8085/addFeuilleDeRoute", {
           typeMateriel: this.typeMat,
           numeroChantier: this.numChantier,
           nomChantier: this.intitChantier,
@@ -256,7 +256,7 @@ export default {
         })
         .then(function(response) {
           console.log(response);
-          self.snackbar = true;
+          self.snackbar = true
           self.clear();
         })
         .catch(function(error) {
