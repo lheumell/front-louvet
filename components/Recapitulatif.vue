@@ -35,7 +35,7 @@
         </p>
 
         <p>
-          <span style="color: #7f8c8d ;">A partir du </span> {{ info.date }}
+          <span style="color: #7f8c8d ;">A partir du </span> {{ date }} <span style="color: #7f8c8d ;">à</span> 
           {{ info.time }} <span style="color: #7f8c8d ;"> pour </span>
           {{ info.nbHeure
           }}<span style="color: #7f8c8d ;"> {{ info.typeTemps }} </span>
@@ -48,7 +48,7 @@
           <span style="color: #7f8c8d ;">Tarif de l'engin :</span>
           {{ info.tarif }}
         </p>
-        <p>
+        <p v-if="info.commentaire">
           <span style="color: #7f8c8d ;">Commentaires divers :</span>
           {{ info.commentaire }}
         </p>
@@ -63,6 +63,12 @@ import axios from "axios";
 export default {
   props: {
     info: {}
+  },
+  data() {
+    return {
+      date: this.info.date.substr(0, 10)
+    }
+    
   }
 };
 </script>

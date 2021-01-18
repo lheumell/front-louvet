@@ -25,7 +25,6 @@
             <v-col cols="6" sm="6">
               <v-text-field
                 v-model="numChantier"
-                type="number"
                 color="blue darken-2"
                 label="n° chantier"
                 required
@@ -76,9 +75,8 @@
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    class="calendar"
                     v-model="date"
-                    label="A partir du "
+                    label="A partir du"
                     prepend-icon="mdi-calendar"
                     readonly
                     v-bind="attrs"
@@ -90,7 +88,7 @@
                   <v-btn text color="primary" @click="menu = false">
                     Cancel
                   </v-btn>
-                  <v-btn text color="primary" @click="save(date)">
+                  <v-btn text color="primary" @click="$refs.menu.save(date)">
                     OK
                   </v-btn>
                 </v-date-picker>
@@ -99,7 +97,7 @@
 
             <v-col cols="6" sm="6">
               <v-menu
-                ref="menu"
+                ref="menu2"
                 :close-on-content-click="false"
                 :nudge-right="40"
                 :return-value.sync="time"
@@ -121,7 +119,7 @@
                 <v-time-picker
                   v-model="time"
                   format="24hr"
-                  @click:minute="$refs.menu.save(time)"
+                  @click:minute="$refs.menu2.save(time)"
                 ></v-time-picker>
               </v-menu>
             </v-col>
@@ -135,7 +133,7 @@
               ></v-text-field>
             </v-col>
             <v-col cols="2" sm="2">
-              <v-select :items="items" v-model="typeTemps" ></v-select>
+              <v-select :items="items" v-model="typeTemps"></v-select>
             </v-col>
           </v-row>
         </v-container>
@@ -159,13 +157,13 @@
 
             <v-card>
               <v-card-title class="headline grey lighten-2">
-                description
+                Commentaires
               </v-card-title>
 
               <v-col cols="12" md="12">
                 <v-textarea
                   name="input-7-1"
-                  placeholder="Ajouter description..."
+                  placeholder="Ajouter un commentaire ou une consigne"
                   v-model="description"
                 ></v-textarea>
               </v-col>
@@ -193,14 +191,16 @@ export default {
   data() {
     const defaultForm = Object.freeze({});
     return {
+      API_URL: process.env.API_URL,
       form: Object.assign({}, defaultForm),
       isValideForm: true,
       snackbar: false,
-        items: ['heure(s)', 'jour(s)'],
+      items: ["heure(s)", "jour(s)"],
       defaultForm,
       date: new Date().toISOString().substr(0, 10),
-      time: null,
       menu: false,
+      menu2: false,
+      time: null,
       dialog: false,
       typeMat: "",
       numChantier: "",
@@ -209,19 +209,20 @@ export default {
       chefChantier: "",
       numChef: "",
       nbHeure: "",
-      description: "", 
-      typeTemps: ""
+      description: "",
+      typeTemps: "",
+      infos: {}
     };
   },
   computed: {
     formIsValid() {
-        this.typeMat &&
+      this.typeMat &&
         this.numChantier &&
         this.intitChantier &&
         this.adresseChantier &&
         this.chefChantier &&
         this.numChef &&
-        this.nbHeure
+        this.nbHeure;
     }
   },
 
@@ -240,7 +241,7 @@ export default {
       this.dialog = false;
 
       axios
-        .post("http://localhost:8081/addFeuilleDeRoute", {
+        .post("http://localhost:8085/addFeuilleDeRoute", {
           typeMateriel: this.typeMat,
           numeroChantier: this.numChantier,
           nomChantier: this.intitChantier,
@@ -255,7 +256,7 @@ export default {
         })
         .then(function(response) {
           console.log(response);
-          self.snackbar = true;
+          self.snackbar = true
           self.clear();
         })
         .catch(function(error) {

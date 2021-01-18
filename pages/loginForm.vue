@@ -12,7 +12,7 @@
       gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.7)"
     >
       <v-card-title
-        >Application suivi materiel {{ nom }}
+        >Application suivi materiel
         <br />
       </v-card-title>
     </v-img>
@@ -101,6 +101,7 @@ export default {
 
   data() {
     return {
+      API_URL: process.env.API_URL,
       password: "",
       showPassword: false,
       identifiant: "",
@@ -121,7 +122,7 @@ export default {
     login() {
       var self = this;
       axios
-        .post("http://localhost:8081/login", {
+        .post("http://localhost:8085/login", {
           email: this.identifiant,
           password: this.password
         })

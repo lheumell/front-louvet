@@ -11,7 +11,7 @@
                     class="ml-3 "
                     style="position: absolute;top: 50%; transform: translateY(-50%);"
                   >
-                    N° de chantier : {{ item.id }}
+                    N° de demande : {{ item.dateFDR.substr(0, 10) + '-' + item.id}}
                   </p>
 
                   <v-icon
@@ -41,9 +41,11 @@ import axios from "axios";
 
 export default {
   data: () => ({
+     API_URL: process.env.API_URL,
     showlist: true,
     selectedItem: {},
-    items: {}
+    items: {},
+    
   }),
   methods: {
     goToBack() {
@@ -56,7 +58,7 @@ export default {
   },
   mounted() {
     axios
-      .get("http://localhost:8081/getFeuilleDeRoute")
+      .get("http://localhost:8085/getFeuilleDeRoute")
       .then(reponse => (this.items = reponse.data.feuilleDeRoute));
   }
 };

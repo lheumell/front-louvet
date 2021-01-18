@@ -1,16 +1,16 @@
 <template>
   <div class="item" :info="info">
     <v-card elevation="4">
-      <p style="background-color: red;" class="text-center">
-        <span class="deep-orange darken-2">{{ info.etat }}</span>
+      <p class="text-right pr-2 pt-2 ma-0">
+        <span style="background-color: red;" class="pa-2">{{ info.etat }}</span>
       </p>
       <div class="container px-10 pb-10">
         <button class="btn btn-primary" @click="goToBack(showlist)">
           <v-icon class="mb-6">mdi-chevron-left </v-icon>
         </button>
         <h1>
-          <span style="color: #7f8c8d;">Numero du chantier:</span>
-          {{ info.numeroChantier }}
+          <span style="color: #7f8c8d;">Numéro de demande : {{prout}</span>
+          {{ date + "-" + info.id }}
         </h1>
         <Recapitulatif :info="info" />
         <Regie
@@ -18,6 +18,7 @@
           :RegieValide="this.info.etat"
           v-if="bonDeRegie[0]"
           @ValidateRegie="ValidateRegie"
+          @notValidateRegie="notValidateRegie"
         />
 
         <v-form method="post" @submit.prevent="submit">
@@ -47,7 +48,7 @@
               </v-col>
             </v-row>
             <v-row v-if="!info.tarif">
-              <v-col cols="12" md="6" >
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model="tarif"
                   color="blue darken-2"
@@ -59,7 +60,12 @@
               <v-col>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="primary" type="submit" text @click="submitTarif()">
+                  <v-btn
+                    color="primary"
+                    type="submit"
+                    text
+                    @click="submitTarif()"
+                  >
                     Envoyer
                   </v-btn>
                 </v-card-actions>
@@ -67,7 +73,10 @@
             </v-row>
           </v-container>
         </v-form>
-        <v-form method="post" v-if="!bonDeRegie[0]">
+        <v-form
+          method="post"
+          v-if="!bonDeRegie[0] || info.etat == 'Bon de régie refusé'"
+        >
           <v-container v-if="statut == 3 && nom == info.chauffeur">
             <v-row>
               <v-col cols="12" md="5" lg="5" xl="5">
@@ -122,25 +131,41 @@ export default {
   },
   data() {
     return {
+      API_URL: process.env.API_URL,
       chauffeur: "",
       tarif: "",
       bonDeRegie: {},
       nbHeuresJour: "",
       nbHeuresNuit: "",
       statut: nuxtStorage.sessionStorage.statut,
-      nom: nuxtStorage.sessionStorage.nom
+      nom: nuxtStorage.sessionStorage.nom,
+      date: this.info.dateFDR.substr(0, 10),
+      prout: ""
     };
   },
   methods: {
     ValidateRegie() {
       axios.post(
-        "http://localhost:8081/updateEtat/" + this.info.numeroChantier,
+        "http://localhost:8085/updateEtat/" + this.info.numeroChantier,
         {
           etat: "Feuille de route validée"
         }
       );
       axios
-        .get("http://localhost:8081/getEtat/" + this.info.numeroChantier)
+        .get("http://localhost:8085/getEtat/" + this.info.numeroChantier)
+        .then(
+          reponse => (this.info.etat = reponse.data.feuilleDeRoute[0].etat)
+        );
+    },
+    notValidateRegie() {
+      axios.post(
+        "http://localhost:8085/updateEtat/" + this.info.numeroChantier,
+        {
+          etat: "Bon de régie refusé"
+        }
+      );
+      axios
+        .get("http://localhost:8085/getEtat/" + this.info.numeroChantier)
         .then(
           reponse => (this.info.etat = reponse.data.feuilleDeRoute[0].etat)
         );
@@ -151,7 +176,7 @@ export default {
     submit() {
       axios
         .post(
-          "http://localhost:8081/addChauffeur/" + this.info.numeroChantier,
+          "http://localhost:8085/addChauffeur/" + this.info.numeroChantier,
           {
             chauffeur: this.chauffeur
           }
@@ -163,7 +188,7 @@ export default {
           console.log(error);
         });
       axios
-        .post("http://localhost:8081/updateEtat/" + this.info.numeroChantier, {
+        .post("http://localhost:8085/updateEtat/" + this.info.numeroChantier, {
           etat: "En attente du bon de regie du chauffeur"
         })
         .then(function(response) {
@@ -173,39 +198,41 @@ export default {
           console.log(error);
         });
       axios
-        .get("http://localhost:8081/getChauffeur/" + this.info.numeroChantier)
+        .get("http://localhost:8085/getChauffeur/" + this.info.numeroChantier)
         .then(
           reponse =>
             (this.info.chauffeur = reponse.data.feuilleDeRoute[0].chauffeur)
         );
       axios
-        .get("http://localhost:8081/getEtat/" + this.info.numeroChantier)
+        .get("http://localhost:8085/getEtat/" + this.info.numeroChantier)
         .then(
           reponse => (this.info.etat = reponse.data.feuilleDeRoute[0].etat)
         );
     },
     submitTarif() {
-            axios
-        .post(
-          "http://localhost:8081/addTarif/" + this.info.numeroChantier,
-          {
-            tarif: this.tarif
-          }
-        )
+      axios
+        .post("http://localhost:8085/addTarif/" + this.info.numeroChantier, {
+          tarif: this.tarif
+        })
         .then(function(response) {
           console.log(response);
         })
         .catch(function(error) {
           console.log(error);
         });
+      axios
+        .get("http://localhost:8085/getTarif/" + this.info.numeroChantier)
+        .then(
+          reponse => (this.info.tarif = reponse.data.feuilleDeRoute[0].tarif)
+        );
     },
     submitRegie() {
       axios
-        .post("http://localhost:8081/addBonRegie", {
+        .post("http://localhost:8085/addBonRegie", {
           nbHeuresJour: this.nbHeuresJour,
           nbHeuresNuit: this.nbHeuresNuit,
           numeroChantier: this.info.numeroChantier,
-          typeMat: this.info.typeMateriel,
+          typeMat: this.info.typeMateriel
         })
         .then(function(response) {
           console.log(response);
@@ -214,11 +241,11 @@ export default {
           console.log(error);
         });
       axios
-        .get("http://localhost:8081/getBonDeRegie/" + this.info.numeroChantier)
+        .get("http://localhost:8085/getBonDeRegie/" + this.info.numeroChantier)
         .then(reponse => (this.bonDeRegie = reponse.data.bonDeRegie));
       axios
-        .post("http://localhost:8081/updateEtat/" + this.info.numeroChantier, {
-          etat: "En attente de validation par le dispatcheur"
+        .post("http://localhost:8085/updateEtat/" + this.info.numeroChantier, {
+          etat: "En attente de validation par le dispatcheur Louvet"
         })
         .then(function(response) {
           console.log(response);
@@ -227,7 +254,7 @@ export default {
           console.log(error);
         });
       axios
-        .get("http://localhost:8081/getEtat/" + this.info.numeroChantier)
+        .get("http://localhost:8085/getEtat/" + this.info.numeroChantier)
         .then(
           reponse => (this.info.etat = reponse.data.feuilleDeRoute[0].etat)
         );
@@ -235,8 +262,14 @@ export default {
   },
   mounted() {
     axios
-      .get("http://localhost:8081/getBonDeRegie/" + this.info.numeroChantier)
+      .get("http://localhost:8085/getBonDeRegie/" + this.info.numeroChantier)
       .then(reponse => (this.bonDeRegie = reponse.data.bonDeRegie));
+    var date = this.info.dateFDR.substr(0, 10);
+    date = date
+      .split("-")
+      .reverse()
+      .join("-");
+    console.log(date);
   }
 };
 </script>
